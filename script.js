@@ -6,24 +6,16 @@ const scale = 10;
 const width = 50;
 const height = 50;
 
-let cells = [];
-
-init();
+let cells = [], encoder, frames;
 
 canvas.width = width * scale;
 canvas.height = height * scale;
 
-let encoder = new GIFEncoder();
-let frames = 0;
-encoder.setDelay(0);
-encoder.setRepeat(0);
-encoder.start();
+init();
+record();
 
 (function main () {
   update();
-  encoder.addFrame(context);
-  frames ++;
-  if (frames === 1000) save();
   window.requestAnimationFrame(main);
 })();
 
@@ -40,9 +32,20 @@ function init () {
   redraw(cells);
 }
 
+function record () {
+  encoder = new GIFEncoder();
+  frames = 0;
+  encoder.setDelay(0);
+  encoder.setRepeat(0);
+  encoder.start();
+}
+
 function redraw (cells) {
   reset();
   cells.filter(({status: es}) => es === 1).forEach(({x: ex, y: ey}) => context.fillRect(ex * scale, ey * scale, scale, scale));
+  encoder.addFrame(context);
+  frames ++;
+  if (frames === 1000) save();
 }
 
 function reset () {
@@ -79,6 +82,7 @@ function save () {
   a.href = window.URL.createObjectURL(blob);
   a.download = `life-game-${Date.now()}.gif`;
   a.click();
+  record();
 }
 
 function update () {
