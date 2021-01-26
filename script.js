@@ -12,7 +12,6 @@ canvas.width = width * scale;
 canvas.height = height * scale;
 
 init();
-record();
 
 (function main () {
   update();
@@ -24,12 +23,13 @@ function count (x, y) {
 }
 
 function init () {
+  record();
   let status;
   for (let x = 0; x < width; x ++) for (let y = 0; y < height; y ++) {
     status = Math.round(Math.random());
     cells.push({x, y, status});
   }
-  redraw(cells);
+  redraw();
 }
 
 function record () {
@@ -40,7 +40,7 @@ function record () {
   encoder.start();
 }
 
-function redraw (cells) {
+function redraw () {
   reset();
   cells.filter(({status: es}) => es === 1).forEach(({x: ex, y: ey}) => context.fillRect(ex * scale, ey * scale, scale, scale));
   encoder.addFrame(context);
@@ -89,8 +89,8 @@ function update () {
   let len, temp = cells.slice();
   temp.forEach(({x: cx, y: cy, status: cs}, i) => {
     len = count(cx, cy);
-    temp[i] = {x: cx, y: cy};
-    temp[i].status = Math.random() < 1 / width / height ? 1 : cs === 0 ? len === 3 ? 1 : 0 : len === 2 || len === 3 ? 1 : 0;
+    cells[i] = {x: cx, y: cy};
+    cells[i].status = Math.random() < 1 / width / height ? 1 : cs === 0 ? len === 3 ? 1 : 0 : len === 2 || len === 3 ? 1 : 0;
   });
-  redraw(cells);
+  redraw();
 }
